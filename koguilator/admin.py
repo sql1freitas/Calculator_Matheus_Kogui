@@ -20,14 +20,20 @@ class UsuarioAdmin(BaseUserAdmin):
     add_form = UsuarioCreationForm
     
     list_display = ("nome", "email", "is_staff", "is_active", "data_inclusao")
+    
     list_filter = ("is_staff", "is_active", "data_inclusao")
+
     search_fields = ("email", "nome")
+
     ordering = ("nome",)
+
     readonly_fields = ("data_inclusao",)
     
     fieldsets = (
         (None, {"fields": ("email", "password")}),
+
         (_("Personal info"), {"fields": ("nome",)}),
+
         (_("Permissions"), {
             "fields": ("is_active", "is_staff", "is_superuser", "groups", "user_permissions"),
         }),
@@ -45,9 +51,13 @@ class UsuarioAdmin(BaseUserAdmin):
 class OperacaoAdmin(admin.ModelAdmin):
     
     list_display = ("nome_do_usuario", "parametros", "resultado", "data_inclusao")
+
     list_filter = ("data_inclusao",)
+
     search_fields = ("parametros", "resultado", "idUsuario__nome", "idUsuario__email")
+
     ordering = ("-data_inclusao",)
+    
     readonly_fields = ("data_inclusao", "idUsuario")
 
     @admin.display(description="Usuário")

@@ -14,6 +14,8 @@ class UsuarioManager(BaseUserManager):
         if not email:
             raise ValueError("O e-mail é obrigatório")
         
+        validar_senha(password)
+        
         email = self.normalize_email(email)
 
         user = self.model(email=email, nome=nome, **extra_fields)
@@ -55,7 +57,6 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
                              verbose_name="Email")
 
     senha = models.CharField(max_length=128,
-                             validators=[validar_senha],
                              null=False,
                              blank=False,
                              verbose_name="Senha")

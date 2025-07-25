@@ -6,7 +6,9 @@ from django.contrib.auth import login
 from koguilator.models import Usuario
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
+from django.core.exceptions import ValidationError
 
+from django.core.exceptions import ValidationError
 
 def login_registro_view(request):
     if request.method == "POST":
@@ -38,10 +40,22 @@ def login_registro_view(request):
                 usuario = Usuario.objects.create_user(email=email, nome=nome, password=senha)
                 login(request, usuario)
                 return redirect("calculadora")
+
+            except ValidationError as e:
+                erro_msg = e.messages[0] if e.messages else "Erro ao registrar."
+                return render(request, "index.html", {
+                    "registro_erro": erro_msg,
+                    "registro_ativo": True
+                })
+
             except Exception as e:
-                return render(request, "index.html", {"registro_erro": str(e)})
+                return render(request, "index.html", {
+                    "registro_erro": str(e),
+                    "registro_ativo": True
+                })
 
     return render(request, "index.html")
+
 
 
 @login_required
