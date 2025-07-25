@@ -12,7 +12,7 @@ class UsuarioManager(BaseUserManager):
                     **extra_fields):
         
         if not email:
-            raise ValueError('O e-mail é obrigatório')
+            raise ValueError("O e-mail é obrigatório")
         
         email = self.normalize_email(email)
 
@@ -28,8 +28,8 @@ class UsuarioManager(BaseUserManager):
                          nome, password=None, 
                          **extra_fields):
         
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
 
         return self.create_user(email, nome, password, **extra_fields)
     
@@ -46,7 +46,7 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
     nome = models.CharField(max_length=255,
                             null=False,
                             blank=False,
-                            verbose_name= "Nome")
+                            verbose_name="Nome")
     
     email = models.CharField(max_length=255,
                              null=False,
@@ -63,7 +63,6 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
     data_inclusao = models.DateTimeField(auto_now_add=True,
                                       null=False,
                                       blank=False,
-                                      editable=False,
                                       verbose_name="Data de Inclusão")
     
     is_active = models.BooleanField(default=True)
@@ -86,9 +85,9 @@ class Operacao(models.Model):
     
     idUsuario = models.ForeignKey(Usuario, 
                                   on_delete=models.CASCADE, 
-                                  related_name= "operacoes",
+                                  related_name="operacoes",
                                   editable=False,
-                                  verbose_name= "Usuário")
+                                  verbose_name="Usuário")
     
     parametros = models.CharField(max_length=255,
                                   null=False,
@@ -103,6 +102,5 @@ class Operacao(models.Model):
     data_inclusao = models.DateTimeField(auto_now_add=True,
                                       null=False,
                                       blank=False,
-                                      editable=False,
                                       verbose_name="Data de Inclusão")
-    
+

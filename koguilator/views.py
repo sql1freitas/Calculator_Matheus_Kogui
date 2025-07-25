@@ -8,43 +8,40 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 
 
-
 def login_registro_view(request):
-    if request.method == 'POST':
-        form_type = request.POST.get('form_type')
+    if request.method == "POST":
+        form_type = request.POST.get("form_type")
 
-        if form_type == 'login':
-            email = request.POST.get('username')
-            senha = request.POST.get('password')
+        if form_type == "login":
+            email = request.POST.get("username")
+            senha = request.POST.get("password")
             user = authenticate(request, username=email, password=senha)
             if user is not None:
                 login(request, user)
-                return redirect('calculadora')
+                return redirect("calculadora")
             else:
-                return render(request, 'login_registro.html', {'login_erro': 'Credenciais inválidas.'})
+                return render(request, "login_registro.html", {"login_erro": "Credenciais inválidas."})
 
-        elif form_type == 'registro':
-            nome = request.POST.get('nome')
-            email = request.POST.get('email')
-            senha = request.POST.get('senha')
-            confirmar = request.POST.get('confirmar_senha')
+        elif form_type == "registro":
+            nome = request.POST.get("nome")
+            email = request.POST.get("email")
+            senha = request.POST.get("senha")
+            confirmar = request.POST.get("confirmar_senha")
 
             if senha != confirmar:
-                return render(request, 'login_registro.html', {'registro_erro': 'As senhas não coincidem.'})
+                return render(request, "login_registro.html", {"registro_erro": "As senhas não coincidem."})
 
             if Usuario.objects.filter(email=email).exists():
-                return render(request, 'login_registro.html', {'registro_erro': 'Email já registrado.'})
+                return render(request, "login_registro.html", {"registro_erro": "Email já registrado."})
 
             try:
                 usuario = Usuario.objects.create_user(email=email, nome=nome, password=senha)
                 login(request, usuario)
-                return redirect('calculadora')
+                return redirect("calculadora")
             except Exception as e:
-                return render(request, 'login_registro.html', {'registro_erro': str(e)})
+                return render(request, "login_registro.html", {"registro_erro": str(e)})
 
-    return render(request, 'login_registro.html')
-
-
+    return render(request, "login_registro.html")
 
 
 @login_required
@@ -75,9 +72,9 @@ def calculadora_view(request):
                 resultado=str(resultado)
             )
 
-    historico = Operacao.objects.filter(idUsuario=request.user).order_by('-data_inclusao')[:5]
+    historico = Operacao.objects.filter(idUsuario=request.user).order_by("-data_inclusao")[:5]
 
-    return render(request, 'calculadora.html', {
-        'resultado': resultado,
-        'historico': historico
+    return render(request, "calculadora.html", {
+        "resultado": resultado,
+        "historico": historico
     })
