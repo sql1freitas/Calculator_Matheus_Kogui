@@ -11,7 +11,6 @@ ALLOWED_HOSTS = config("DJANGO_ALLOWED_HOSTS", default="").split()
 
 
 
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -79,6 +78,9 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTH_USER_MODEL = 'koguilator.Usuario'
+
+LOGIN_URL = '/auth/'
+LOGIN_REDIRECT_URL = '/'
 
 LANGUAGE_CODE = 'pt-br'
 
