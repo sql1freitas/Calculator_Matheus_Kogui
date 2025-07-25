@@ -66,8 +66,8 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
                                       blank=False,
                                       verbose_name="Data de Inclusão")
     
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True, verbose_name="Ativo")
+    is_staff = models.BooleanField(default=False, verbose_name="Admin")
 
     objects = UsuarioManager()
 
