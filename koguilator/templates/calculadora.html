@@ -1,26 +1,229 @@
-<h1>Calculadora</h1>
-<form method="post">
-  {% csrf_token %}
-  <input type="number" name="valor1" required>
-  <select name="operacao">
-    <option value="soma">+</option>
-    <option value="subtracao">-</option>
-    <option value="multiplicacao">*</option>
-    <option value="divisao">/</option>
-  </select>
-  <input type="number" name="valor2" required>
-  <button type="submit">Calcular</button>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kogui - Calculadora</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+       
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a1a2e;
+            background-image: linear-gradient(145deg, #1a1a2e 0%, #3c1a4e 100%);
+            color: #f0f0f0;
+        }
+  
+        .calc-btn {
+            background-color: rgba(55, 65, 81, 0.5); 
+            color: #fff;
+            font-weight: bold;
+            padding-top: 1.25rem;
+            padding-bottom: 1.25rem;
+            border-radius: 0.75rem;
+            font-size: 1.5rem;
+            transition: all 0.15s ease-in-out;
+        }
+        .calc-btn:hover {
+            background-color: rgba(75, 85, 99, 0.6);
+        }
+        .calc-btn:active {
+            transform: scale(0.95);
+        }
+        .calc-btn.operator {
+            background-color: #9333ea;
+        }
+        .calc-btn.operator:hover {
+            background-color: #7e22ce;
+        }
+        .calc-btn.special {
+            background-color: #dc2626;
+        }
+        .calc-btn.special:hover {
+            background-color: #b91c1c;
+        }
+        .calc-btn.equals {
+            background-color: #2563eb;
+        }
+        .calc-btn.equals:hover {
+            background-color: #1d4ed8;
+        }
+        
+        .history-item {
+            border-bottom: 1px solid rgba(75, 85, 99, 0.5);
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+
+    <header class="w-full max-w-4xl mx-auto flex justify-between items-center mb-4">
+        <div>
+            <h1 class="text-2xl font-bold text-white">Koguilator</h1>
+            <p class="text-gray-400">Bem-vindo(a), {{ user.nome }}!</p>
+        </div>
+        <form action="{% url 'logout' %}" method="post">
+    {% csrf_token %}
+    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors">
+        <i class="fa-solid fa-right-from-bracket mr-2"></i>Logout
+    </button>
 </form>
+    </header>
 
-{% if resultado is not None %}
-  <p>Resultado: {{ resultado }}</p>
-{% endif %}
+    <main class="w-full max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+        
+        <div class="md:col-span-2 p-6 bg-gray-800/50 rounded-2xl shadow-2xl border border-gray-700/50 backdrop-blur-sm">
+            
+            <div id="display" class="bg-gray-900/70 rounded-lg p-4 mb-6 text-right text-5xl font-light break-all">0</div>
 
-<h2>Últimos Cálculos:</h2>
-<ul>
-  {% for op in historico %}
-    <li>{{ op.parametros }} = {{ op.resultado }}</li>
-  {% endfor %}
-</ul>
+            <div class="grid grid-cols-4 gap-3">
+                <button onclick="clearDisplay()" class="calc-btn special">C</button>
+                <button onclick="appendCharacter('%')" class="calc-btn operator">%</button>
+                <button onclick="deleteLast()" class="calc-btn operator"><i class="fa-solid fa-delete-left"></i></button>
+                <button onclick="appendCharacter('/')" class="calc-btn operator">÷</button>
 
-<a href="{% url 'logout' %}">Sair</a>
+                <button onclick="appendCharacter('7')" class="calc-btn">7</button>
+                <button onclick="appendCharacter('8')" class="calc-btn">8</button>
+                <button onclick="appendCharacter('9')" class="calc-btn">9</button>
+                <button onclick="appendCharacter('*')" class="calc-btn operator">×</button>
+
+                <button onclick="appendCharacter('4')" class="calc-btn">4</button>
+                <button onclick="appendCharacter('5')" class="calc-btn">5</button>
+                <button onclick="appendCharacter('6')" class="calc-btn">6</button>
+                <button onclick="appendCharacter('-')" class="calc-btn operator">-</button>
+
+                <button onclick="appendCharacter('1')" class="calc-btn">1</button>
+                <button onclick="appendCharacter('2')" class="calc-btn">2</button>
+                <button onclick="appendCharacter('3')" class="calc-btn">3</button>
+                <button onclick="appendCharacter('+')" class="calc-btn operator">+</button>
+
+                <button onclick="appendCharacter('0')" class="calc-btn col-span-2">0</button>
+                <button onclick="appendCharacter('.')" class="calc-btn">.</button>
+                <button onclick="calculateResult()" class="calc-btn equals">=</button>
+            </div>
+        </div>
+
+        
+        <div class="p-6 bg-gray-800/50 rounded-2xl shadow-2xl border border-gray-700/50 backdrop-blur-sm">
+            <h2 class="text-xl font-semibold mb-4 flex items-center"><i class="fa-solid fa-clock-rotate-left mr-3"></i>Histórico</h2>
+            <div id="history-list" class="space-y-2 text-gray-300">
+                {% if historico %}
+                    {% for op in historico %}
+                    <div class="history-item">
+                        <p class="text-sm text-gray-400">{{ op.parametros }}</p>
+                        <p class="text-lg font-bold text-white">= {{ op.resultado }}</p>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-gray-500">Nenhum cálculo recente.</p>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+
+    
+    <form id="calc-form" method="POST" action="{% url 'calculadora' %}" class="hidden">
+        {% csrf_token %}
+        <input type="hidden" id="form-valor1" name="valor1">
+        <input type="hidden" id="form-valor2" name="valor2">
+        <input type="hidden" id="form-operacao" name="operacao">
+    </form>
+
+    <script>
+        const display = document.getElementById('display');
+        let currentExpression = '0';
+        
+        
+        function appendCharacter(char) {
+            if (currentExpression === '0' && !['.','+','-','*','/','%'].includes(char)) {
+                currentExpression = '';
+            }
+            
+            const lastChar = currentExpression.slice(-1);
+            if (['+','-','*','/'].includes(lastChar) && ['+','-','*','/'].includes(char)) {
+                currentExpression = currentExpression.slice(0, -1);
+            }
+            currentExpression += char;
+            updateDisplay();
+        }
+
+        
+        function clearDisplay() {
+            currentExpression = '0';
+            updateDisplay();
+        }
+        
+        
+        function deleteLast() {
+            currentExpression = currentExpression.slice(0, -1);
+            if (currentExpression === '') {
+                currentExpression = '0';
+            }
+            updateDisplay();
+        }
+
+        
+        function updateDisplay() {
+            display.textContent = currentExpression.replace(/\//g, '÷').replace(/\*/g, '×');
+        }
+
+        
+        function calculateResult() {
+            try {
+                
+                let evalExpression = currentExpression.replace(/%/g, '/100');
+                
+                const result = eval(evalExpression);
+
+                if (isNaN(result) || !isFinite(result)) {
+                    throw new Error("Cálculo inválido");
+                }
+                
+                
+                logOperation(currentExpression, result);
+
+                currentExpression = String(result);
+                updateDisplay();
+
+            } catch (error) {
+                currentExpression = 'Erro';
+                updateDisplay();
+                setTimeout(clearDisplay, 1500);
+            }
+        }
+        
+        
+        function logOperation(expression, result) {
+            
+            const match = expression.match(/([0-9\.]+)\s*([\+\-\*\/])\s*([0-9\.]+)/);
+            
+            if (match) {
+                const [, valor1, op, valor2] = match;
+                let operacao = '';
+                if (op === '+') operacao = 'soma';
+                if (op === '-') operacao = 'subtracao';
+                if (op === '*') operacao = 'multiplicacao';
+                if (op === '/') operacao = 'divisao';
+
+                document.getElementById('form-valor1').value = valor1;
+                document.getElementById('form-valor2').value = valor2;
+                document.getElementById('form-operacao').value = operacao;
+                
+                
+                document.getElementById('calc-form').submit();
+            } else {
+                
+                console.log("Expressão simples, não foi logada:", expression);
+            }
+        }
+    </script>
+</body>
+</html>

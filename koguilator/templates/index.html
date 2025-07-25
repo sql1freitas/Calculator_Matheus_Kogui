@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Koguilator - Login</title>
+  
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #111827;
+            background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.1) 1px, transparent 0);
+            background-size: 2rem 2rem;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+
+    <div class="w-full max-w-md p-8 space-y-8 bg-gray-800 rounded-2xl shadow-2xl border border-gray-700">
+        <div class="text-center">
+            <h1 class="text-3xl font-bold text-white">Koguilator</h1>
+            <p class="text-gray-400">A calculadora com boa lembrança!</p>
+        </div>
+
+        
+        <div class="flex border-b border-gray-600">
+            <button id="login-tab" class="flex-1 py-2 text-center font-semibold text-white border-b-2 border-purple-500" onclick="switchTab('login')">Login</button>
+            <button id="register-tab" class="flex-1 py-2 text-center font-semibold text-gray-400" onclick="switchTab('register')">Registrar</button>
+        </div>
+
+        
+        <div id="login-content" class="tab-content active">
+            <form class="mt-8 space-y-6" method="POST" action="{% url 'index' %}">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="login">
+                
+                {% if login_erro %}
+                    <div class="p-3 mb-4 text-sm text-red-200 bg-red-900/50 rounded-lg" role="alert">
+                      {{ login_erro }}
+                    </div>
+                {% endif %}
+
+                <div class="space-y-4 rounded-md shadow-sm">
+                    <div>
+                        <label for="login-email" class="sr-only">Email</label>
+                        <input id="login-email" name="username" type="email" autocomplete="email" required class="relative block w-full px-3 py-3 bg-gray-900 border border-gray-700 text-white placeholder-gray-500 rounded-md focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm" placeholder="Seu email">
+                    </div>
+                    <div>
+                        <label for="login-password" class="sr-only">Senha</label>
+                        <input id="login-password" name="password" type="password" autocomplete="current-password" required class="relative block w-full px-3 py-3 bg-gray-900 border border-gray-700 text-white placeholder-gray-500 rounded-md focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm" placeholder="Sua senha">
+                    </div>
+                </div>
+
+                <div>
+                    <button type="submit" class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-purple-500 transition-colors">
+                        Entrar
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        
+        <div id="register-content" class="tab-content">
+            <form class="mt-8 space-y-6" method="POST" action="{% url 'index' %}">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="registro">
+
+                {% if registro_erro %}
+                    <div class="p-3 mb-4 text-sm text-red-200 bg-red-900/50 rounded-lg" role="alert">
+                      {{ registro_erro }}
+                    </div>
+                {% endif %}
+
+                <div class="space-y-4 rounded-md shadow-sm">
+                    <div>
+                        <input name="nome" type="text" required class="relative block w-full px-3 py-3 bg-gray-900 border border-gray-700 text-white placeholder-gray-500 rounded-md focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm" placeholder="Nome completo">
+                    </div>
+                    <div>
+                        <input name="email" type="email" autocomplete="email" required class="relative block w-full px-3 py-3 bg-gray-900 border border-gray-700 text-white placeholder-gray-500 rounded-md focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm" placeholder="Email">
+                    </div>
+                    <div>
+                        <input name="senha" type="password" required class="relative block w-full px-3 py-3 bg-gray-900 border border-gray-700 text-white placeholder-gray-500 rounded-md focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm" placeholder="Crie uma senha">
+                    </div>
+                    <div>
+                        <input name="confirmar_senha" type="password" required class="relative block w-full px-3 py-3 bg-gray-900 border border-gray-700 text-white placeholder-gray-500 rounded-md focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm" placeholder="Confirme a senha">
+                    </div>
+                </div>
+
+                <div>
+                    <button type="submit" class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-purple-500 transition-colors">
+                        Criar Conta
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        
+        function switchTab(tab) {
+            const loginContent = document.getElementById('login-content');
+            const registerContent = document.getElementById('register-content');
+            const loginTab = document.getElementById('login-tab');
+            const registerTab = document.getElementById('register-tab');
+
+            if (tab === 'login') {
+                loginContent.classList.add('active');
+                registerContent.classList.remove('active');
+                loginTab.classList.add('text-white', 'border-purple-500');
+                loginTab.classList.remove('text-gray-400', 'border-transparent');
+                registerTab.classList.add('text-gray-400', 'border-transparent');
+                registerTab.classList.remove('text-white', 'border-purple-500');
+            } else {
+                loginContent.classList.remove('active');
+                registerContent.classList.add('active');
+                loginTab.classList.remove('text-white', 'border-purple-500');
+                loginTab.classList.add('text-gray-400', 'border-transparent');
+                registerTab.classList.remove('text-gray-400', 'border-transparent');
+                registerTab.classList.add('text-white', 'border-purple-500');
+            }
+        }
+    </script>
+</body>
+</html>

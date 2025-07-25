@@ -79,7 +79,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTH_USER_MODEL = 'koguilator.Usuario'
 
-LOGIN_URL = '/auth/'
+LOGIN_URL = '/index'
 LOGIN_REDIRECT_URL = '/'
 
 LANGUAGE_CODE = 'pt-br'
