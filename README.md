@@ -2,7 +2,7 @@
 
 **Koguilator** é uma aplicação Django que permite aos usuários realizar operações matemáticas simples (soma, subtração, multiplicação e divisão) após login, e armazena o histórico dos últimos cálculos feitos por cada usuário. O sistema também possui uma tela de registro com validação de senha segura e interface moderna.
 
-![Demonstração:](/Calculator_Matheus_Kogui/demonstração.png)
+![Demonstração:](/demonstração.png)
 ---
 
 ## ✨ Funcionalidades
